@@ -1,4 +1,4 @@
-package server
+package models
 
 import (
 	"fmt"
@@ -6,12 +6,23 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/kelvin-mai/go-anon-board/models"
 )
 
-var DB *gorm.DB
+var db *gorm.DB
 
-func DbConnect() *gorm.DB {
+func GetDB() *gorm.DB {
+	return db
+}
+
+func AutoMigrate(db *gorm.DB) {
+	db.AutoMigrate(
+		&Board{},
+		&Thread{},
+		&Reply{},
+	)
+}
+
+func Init() *gorm.DB {
 	dsn := url.URL{
 		User:     url.UserPassword("postgres", "postgres"),
 		Scheme:   "postgres",
@@ -19,21 +30,12 @@ func DbConnect() *gorm.DB {
 		Path:     "go_anon",
 		RawQuery: (&url.Values{"sslmode": []string{"disable"}}).Encode(),
 	}
-	db, err := gorm.Open("postgres", dsn.String())
+	conn, err := gorm.Open("postgres", dsn.String())
 	if err != nil {
 		panic("database connection failed")
 	}
+	db = conn
 	db.LogMode(true)
-	DB = db
+	AutoMigrate(db)
 	return db
-}
-
-func GetDB() *gorm.DB {
-	return DB
-}
-
-func AutoMigrate() {
-	db := GetDB()
-	db.AutoMigrate(&models.Thread{})
-	db.AutoMigrate(&models.Reply{})
 }

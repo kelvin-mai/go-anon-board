@@ -1,4 +1,4 @@
-package server
+package router
 
 import (
 	helmet "github.com/danielkov/gin-helmet"
@@ -28,8 +28,15 @@ func setUpRoutes(r *gin.Engine) {
 	views := r.Group("/")
 	controllers.RegisterHtmlRoutes(views)
 
-	api := r.Group("/api")
+	api := r.Group("/api/")
 	api.GET("/", pingHandler)
-	controllers.RegisterReplyRoutes(api.Group("/threads"))
-	controllers.RegisterReplyRoutes(api.Group("/replies"))
+	controllers.RegisterThreadRoutes(api.Group("/threads/:board"))
+	controllers.RegisterReplyRoutes(api.Group("/replies/:board"))
+}
+
+func Init() {
+	r := newRouter()
+	r.LoadHTMLGlob("templates/*")
+	setUpRoutes(r)
+	r.Run()
 }
