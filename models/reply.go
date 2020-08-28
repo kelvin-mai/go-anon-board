@@ -10,6 +10,5 @@ type Reply struct {
 	CreatedOn      time.Time `json:"created_on" gorm:"default:now()"`
 	Reported       bool      `json:"reported" gorm:"default:false"`
 	DeletePassword string    `json:"-" gorm:"not null"`
-	ThreadID       uint
-	Thread         Thread
+	ThreadID       uint      `json:"-"`
 }

@@ -12,7 +12,7 @@ func listThreads(c *gin.Context) {
 	var t []models.Thread
 	models.FindOrCreateBoard(c.Param("board"), &b)
 	db := models.GetDB()
-	db.Find(&b).Related(&t).Where("board_id = ?", b.ID).Order("bumped_on DESC").Limit(10)
+	db.Where("board_id = ?", b.ID).Preload("Replies").Order("bumped_on DESC").Limit(10).Find(&t)
 	c.JSON(http.StatusOK, t)
 }
 
@@ -70,6 +70,6 @@ func deleteThread(c *gin.Context) {
 func RegisterThreadRoutes(r *gin.RouterGroup) {
 	r.GET("/", listThreads)
 	r.POST("/", createThread)
-	r.PUT("/:id", reportThread)
-	r.DELETE("/:id", deleteThread)
+	r.PUT("/", reportThread)
+	r.DELETE("/", deleteThread)
 }

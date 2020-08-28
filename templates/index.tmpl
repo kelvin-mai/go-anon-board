@@ -1,5 +1,13 @@
 {{ template "header.tmpl" .}}
 
-<h1>Hello World</h1>
+<ul>
+  {{ range.boards }}
+  <li>
+    <a href="/b/{{ .Title }}">
+      {{ .Title }}
+    </a>
+   </li>
+  {{ end }}
+</ul>
 
 {{ template "footer.tmpl" .}}

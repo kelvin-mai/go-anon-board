@@ -1,0 +1,12 @@
+{{ template "header.tmpl" .}}
+
+<ul>
+  {{ range .threads }}
+    <li>
+      {{ .Text }}
+    </li>
+  {{ end }}
+</ul>
+
+{{ template "footer.tmpl" .}}
+
