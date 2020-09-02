@@ -3,9 +3,8 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/kelvin-mai/go-anon-board/models"
-
 	"github.com/gin-gonic/gin"
+	"github.com/kelvin-mai/go-anon-board/models"
 )
 
 func index(c *gin.Context) {
@@ -25,7 +24,7 @@ func boardPage(c *gin.Context) {
 	board := c.Param("board")
 	models.FindOrCreateBoard(board, &b)
 	db := models.GetDB()
-	db.Where("board_id = ?", b.ID).Order("bumped_on DESC").Limit(10).Find(&t)
+	db.Where("board_id = ?", b.ID).Preload("Replies").Order("bumped_on DESC").Limit(10).Find(&t)
 	c.HTML(http.StatusOK, "board.tmpl",
 		gin.H{
 			"title":   board,

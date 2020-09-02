@@ -1,12 +1,38 @@
 {{ template "header.tmpl" .}}
 
+{{ $board := .title }}
+
+<h2>Create Thread?</h2>
+<form action="/api/threads/{{ $board }}" method="POST">
+  <label for="create_text">Text</label>
+  <input id="create_text" name="text" />
+  <label for="create_password">Delete Password</label>
+  <input id="create_password" type="password" name="password" />
+  <button type="submit">Submit</button>
+</form>
+
 <ul>
   {{ range .threads }}
-    <li>
-      {{ .Text }}
-    </li>
+  <li>
+    <div>
+      <p>{{ .Text }}</p>
+      <form action="/api/threads/{{ $board }}" method="DELETE">
+        <input type="password" name="password" />
+        <input type="hidden" value="{{ .ID }}" name="id"/>
+        <button type="submit">Delete</button>
+      </form>
+      <form action="/api/threads/{{ $board }}" method="PUT">
+        <input type="hidden" value="{{ .ID }}" name="id" />
+        <button type="submit">Report</button>
+      </form>
+      <ul>
+        {{ range .Replies}}
+        <li>{{ .Text }}</li>
+        {{ end }}
+      </ul>
+    </div>
+  </li>
   {{ end }}
 </ul>
 
 {{ template "footer.tmpl" .}}
-
