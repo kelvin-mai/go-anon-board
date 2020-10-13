@@ -61,7 +61,7 @@ func softDeleteReply(c *gin.Context) {
 		Where("thread_id = ?", c.PostForm("thread_id")).
 		Where("reply_id = ?", c.PostForm("reply_id")).
 		First(&r)
-	if r.DeletePassword == c.PostForm("") {
+	if r.DeletePassword == c.PostForm("password") {
 		db.Update("text", "[deleted]")
 		c.JSON(http.StatusOK, gin.H{"message": "success"})
 	} else {
