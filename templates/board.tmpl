@@ -25,9 +25,33 @@
         <input type="hidden" value="{{ .ID }}" name="id" />
         <button type="submit">Report</button>
       </form>
+      <form action="/api/replies/{{ $board }}" method="POST">
+        <input type="hidden" value="{{ .ID }}" name="thread_id" />
+        <input type="text" name="text" />
+        <input type="password" name="password" />
+        <button type="submit">Reply</button>
+      </form>
       <ul>
+        {{ $thread_id := .ID }}
         {{ range .Replies}}
-        <li>{{ .Text }}</li>
+        <li>
+          <div>
+            {{ .Text }}
+            {{ if ne .Text "[deleted]" }}
+            <form action="/api/replies/{{ $board }}" method="PUT">
+              <input type="hidden" value="{{ $thread_id }}" name="thread_id" />
+              <input type="hidden" value="{{ .ID }}" name="reply_id" />
+              <button type="submit">Report</button>
+            </form>
+            <form action="/api/replies/{{ $board }}" method="DELETE">
+              <input type="hidden" value="{{ $thread_id }}" name="thread_id" />
+              <input type="hidden" value="{{ .ID }}" name="reply_id" />
+              <input type="password" name="password" />
+              <button type="submit">Delete</button>
+            </form>
+            {{ end }}
+          </div>
+        </li>
         {{ end }}
       </ul>
     </div>

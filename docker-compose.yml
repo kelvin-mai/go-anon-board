@@ -1,9 +1,9 @@
-version: '3'
+version: "3"
 
 services:
   db:
     container_name: go_anon_db
-    restart: always
+    # restart: always
     image: postgres
     ports:
       - 5432:5432
