@@ -3,6 +3,7 @@ module github.com/kelvin-mai/go-anon-board
 go 1.14
 
 require (
+	github.com/bu/gin-method-override v0.0.0-20180528072813-3f56fc145a4b
 	github.com/danielkov/gin-helmet v0.0.0-20171108135313-1387e224435e
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/validator/v10 v10.3.0 // indirect

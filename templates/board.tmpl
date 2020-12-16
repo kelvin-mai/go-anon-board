@@ -16,12 +16,14 @@
   <li>
     <div>
       <p>{{ .Text }}</p>
-      <form action="/api/threads/{{ $board }}" method="DELETE">
+      <form action="/api/threads/{{ $board }}" method="POST">
+        <input type="hidden" value="delete" name="_method" />
         <input type="password" name="password" />
         <input type="hidden" value="{{ .ID }}" name="id"/>
         <button type="submit">Delete</button>
       </form>
-      <form action="/api/threads/{{ $board }}" method="PUT">
+      <form action="/api/threads/{{ $board }}" method="POST">
+        <input type="hidden" value="PUT" name="_method" />
         <input type="hidden" value="{{ .ID }}" name="id" />
         <button type="submit">Report</button>
       </form>
@@ -38,12 +40,14 @@
           <div>
             {{ .Text }}
             {{ if ne .Text "[deleted]" }}
-            <form action="/api/replies/{{ $board }}" method="PUT">
+            <form action="/api/replies/{{ $board }}" method="POST">
+              <input type="hidden" value="put" name="_method" />
               <input type="hidden" value="{{ $thread_id }}" name="thread_id" />
               <input type="hidden" value="{{ .ID }}" name="reply_id" />
               <button type="submit">Report</button>
             </form>
-            <form action="/api/replies/{{ $board }}" method="DELETE">
+            <form action="/api/replies/{{ $board }}" method="POST">
+              <input type="hidden" value="delete" name="_method" />
               <input type="hidden" value="{{ $thread_id }}" name="thread_id" />
               <input type="hidden" value="{{ .ID }}" name="reply_id" />
               <input type="password" name="password" />

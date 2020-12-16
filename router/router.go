@@ -1,6 +1,7 @@
 package router
 
 import (
+	method "github.com/bu/gin-method-override"
 	helmet "github.com/danielkov/gin-helmet"
 	"github.com/gin-gonic/gin"
 	"github.com/kelvin-mai/go-anon-board/controllers"
@@ -37,6 +38,7 @@ func setUpRoutes(r *gin.Engine) {
 func Init() {
 	r := newRouter()
 	r.LoadHTMLGlob("templates/*")
+	r.Use(method.ProcessMethodOverride(r))
 	setUpRoutes(r)
 	r.Run()
 }

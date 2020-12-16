@@ -18,13 +18,6 @@ func index(c *gin.Context) {
 		})
 }
 
-func testPage(c *gin.Context) {
-	c.HTML(http.StatusOK, "test.tmpl",
-		gin.H{
-			"title": "Test API",
-		})
-}
-
 func boardPage(c *gin.Context) {
 	var b models.Board
 	var t []models.Thread
@@ -41,7 +34,6 @@ func boardPage(c *gin.Context) {
 
 func RegisterHtmlRoutes(r *gin.RouterGroup) {
 	r.GET("/", index)
-	r.GET("/test", testPage)
 	b := r.Group("/b/:board")
 	b.GET("/", boardPage)
 }
