@@ -1,9 +1,7 @@
 package models
 
-import "github.com/jinzhu/gorm"
-
 type Board struct {
-	gorm.Model
-	Title   string `gorm:"unique"`
-	Threads []Thread
+	BaseModel
+	Title   string   `gorm:"unique" json:"title"`
+	Threads []Thread `json:"threads"`
 }

@@ -2,12 +2,10 @@ package models
 
 import (
 	"time"
-
-	"github.com/jinzhu/gorm"
 )
 
 type Thread struct {
-	gorm.Model
+	BaseModel
 	Text           string    `json:"text"`
 	BumpedOn       time.Time `json:"bumped_on" gorm:"default:now()"`
 	Reported       bool      `json:"reported" gorm:"default:false"`
