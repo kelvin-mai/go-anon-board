@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kelvin-mai/go-anon-board/models"
+	"github.com/kelvin-mai/go-anon-board/utils"
 )
 
 func listThreads(c *gin.Context) {
@@ -26,7 +27,13 @@ func createThread(c *gin.Context) {
 		BoardID:        b.ID,
 	}
 	db.Create(&t)
-	c.JSON(http.StatusCreated, t)
+	if utils.IsBrowser(c) {
+		c.Redirect(http.StatusPermanentRedirect, "/b/"+c.Param("board"))
+		return
+	} else {
+		c.JSON(http.StatusCreated, t)
+		return
+	}
 }
 
 func reportThread(c *gin.Context) {
@@ -39,10 +46,15 @@ func reportThread(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": "success",
-		"thread":  t,
-	})
+	if utils.IsBrowser(c) {
+		c.Redirect(http.StatusPermanentRedirect, "/b/"+c.Param("board"))
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "success",
+			"thread":  t,
+		})
+		return
+	}
 }
 
 func deleteThread(c *gin.Context) {
