@@ -1,7 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"github.com/kelvin-mai/go-anon-board/models"
+	"github.com/kelvin-mai/go-anon-board/providers"
+)
 
 func main() {
-	fmt.Println("Hello world!")
+	c := providers.NewConfig()
+	db := providers.NewDatabaseConnection(c)
+	r := providers.NewRouter(c)
+
+	db.Sync(c, &models.Board{}, &models.Thread{}, &models.Reply{})
+
+	r.Serve()
 }
