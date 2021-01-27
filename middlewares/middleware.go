@@ -1,11 +1,21 @@
 package middlewares
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
 
-func check() gin.HandlerFunc {
+	"github.com/gin-gonic/gin"
+)
+
+func ApiKey(param string, key string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if c.Request.URL.Path != "/test" {
-			c.AbortWithStatusJSON(500, gin.H{"message": "path fail"})
+		attempt := c.Request.Header.Get(param)
+		if attempt != key {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"code":    http.StatusUnauthorized,
+				"message": "Invalid api key",
+			})
+			return
 		}
+		c.Next()
 	}
 }

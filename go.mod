@@ -3,7 +3,6 @@ module github.com/kelvin-mai/go-anon-board
 go 1.14
 
 require (
-	bitbucket.org/BonotelTech/dd-logger v0.0.3
 	github.com/gin-gonic/gin v1.6.3
 	github.com/jinzhu/gorm v1.9.16
 	github.com/sirupsen/logrus v1.7.0

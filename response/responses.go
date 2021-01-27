@@ -13,3 +13,7 @@ func OK(c *gin.Context, resource interface{}) {
 func Created(c *gin.Context, resource interface{}) {
 	c.JSON(http.StatusCreated, resource)
 }
+
+func NoContent(c *gin.Context) {
+	c.Status(http.StatusNoContent)
+}

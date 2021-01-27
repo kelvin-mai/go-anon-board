@@ -2,8 +2,8 @@ package models
 
 type Reply struct {
 	BaseModel
-	Text           string `json:"text"`
-	Reported       bool   `json:"reported" gorm:"default:false"`
-	DeletePassword string `json:"-" gorm:"not null"`
+	Text           string `json:"text" binding:"required"`
+	Reported       bool   `gorm:"default:false" json:"reported"`
+	DeletePassword string `json:"delete_password" gorm:"not null" binding:"required"`
 	ThreadID       uint   `json:"-"`
 }

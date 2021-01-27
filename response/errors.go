@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 type ApiError struct {
@@ -12,38 +13,27 @@ type ApiError struct {
 	Description string `json:"description"`
 }
 
-func InternalServerError(c *gin.Context, err error) {
-	d := "internal server error"
+func createApiError(status int, message string, err error) (int, *ApiError) {
+	d := message
 	if err != nil {
+		log.Error(err.Error())
 		d = err.Error()
 	}
-	c.JSON(http.StatusInternalServerError, &ApiError{
-		Status:      http.StatusInternalServerError,
-		Message:     "internal server error",
+	return status, &ApiError{
+		Status:      status,
+		Message:     message,
 		Description: d,
-	})
+	}
+}
+
+func InternalServerError(c *gin.Context, err error) {
+	c.JSON(createApiError(http.StatusInternalServerError, "internal server error", err))
 }
 
 func ResourceNotFound(c *gin.Context, err error) {
-	d := "resource not found"
-	if err != nil {
-		d = err.Error()
-	}
-	c.JSON(http.StatusNotFound, &ApiError{
-		Status:      http.StatusNotFound,
-		Message:     "resource not found",
-		Description: d,
-	})
+	c.JSON(createApiError(http.StatusNotFound, "resource not found", err))
 }
 
 func BadRequest(c *gin.Context, err error) {
-	d := "bad request"
-	if err != nil {
-		d = err.Error()
-	}
-	c.JSON(http.StatusBadRequest, &ApiError{
-		Status:      http.StatusBadRequest,
-		Message:     "bad request",
-		Description: d,
-	})
+	c.JSON(createApiError(http.StatusBadRequest, "bad request", err))
 }

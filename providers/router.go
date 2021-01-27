@@ -2,6 +2,7 @@ package providers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/kelvin-mai/go-anon-board/response"
 )
 
 type Router interface {
@@ -29,7 +30,11 @@ func NewRouter(c *Config) Router {
 	r.Use(gin.Recovery())
 
 	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{"Status": "OK"})
+		response.OK(c, "OK")
+	})
+
+	r.NoRoute(func(c *gin.Context) {
+		response.ResourceNotFound(c, nil)
 	})
 
 	port := config.GetString("app.port")
