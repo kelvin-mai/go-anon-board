@@ -30,7 +30,7 @@ func NewRouter(c *Config) Router {
 	r.Use(gin.Recovery())
 
 	r.GET("/", func(c *gin.Context) {
-		response.OK(c, "OK")
+		response.OK(c, gin.H{"health": "OK"})
 	})
 
 	r.NoRoute(func(c *gin.Context) {
