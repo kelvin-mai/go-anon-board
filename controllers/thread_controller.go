@@ -49,7 +49,7 @@ func (tc *threadController) ListThreads(c *gin.Context) {
 
 func (tc *threadController) GetThread(c *gin.Context) {
 	id := c.Param("id")
-	notfound, thread := tc.ts.GetById(id)
+	notfound, thread := tc.ts.GetByID(id)
 	if notfound == true {
 		response.ResourceNotFound(c, nil)
 		return
@@ -75,7 +75,7 @@ func (tc *threadController) CreateThread(c *gin.Context) {
 
 func (tc *threadController) ReportThread(c *gin.Context) {
 	id := c.Param("id")
-	notfound, _ := tc.ts.GetById(id)
+	notfound, _ := tc.ts.GetByID(id)
 	if notfound == true {
 		response.ResourceNotFound(c, nil)
 		return
@@ -93,7 +93,7 @@ func (tc *threadController) ReportThread(c *gin.Context) {
 
 func (tc *threadController) DeleteThread(c *gin.Context) {
 	id := c.Param("id")
-	notfound, _ := tc.ts.GetById(id)
+	notfound, _ := tc.ts.GetByID(id)
 	if notfound == true {
 		response.ResourceNotFound(c, nil)
 		return

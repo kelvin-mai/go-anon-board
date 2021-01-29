@@ -8,9 +8,10 @@ import (
 
 type ThreadService interface {
 	List(offset int) (error, *[]models.Thread)
-	GetById(id string) (bool, *models.Thread)
+	GetByID(id string) (bool, *models.Thread)
 	Create(t models.Thread) (error, *models.Thread)
 	Update(id string, t models.Thread) error
+	Delete(id string) error
 }
 
 type threadService struct {
@@ -23,13 +24,13 @@ func NewThreadService(conn providers.DatabaseConnection) ThreadService {
 
 func (ts *threadService) List(offset int) (error, *[]models.Thread) {
 	var t []models.Thread
-	result := ts.db.Limit(10).Offset(offset).Find(&t)
+	result := ts.db.Preload("Replies").Limit(10).Offset(offset).Find(&t)
 	return result.Error, &t
 }
 
-func (ts *threadService) GetById(id string) (bool, *models.Thread) {
+func (ts *threadService) GetByID(id string) (bool, *models.Thread) {
 	var t models.Thread
-	result := ts.db.Where("id = ?", id).First(&t)
+	result := ts.db.Where("id = ?", id).Preload("Replies").First(&t)
 	return result.RecordNotFound(), &t
 }
 
@@ -40,5 +41,10 @@ func (ts *threadService) Create(t models.Thread) (error, *models.Thread) {
 
 func (ts *threadService) Update(id string, t models.Thread) error {
 	result := ts.db.Model(&t).Where("id = ?", id).Update(&t)
+	return result.Error
+}
+
+func (ts *threadService) Delete(id string) error {
+	result := ts.db.Where("id = ?", id).Delete(&models.Thread{})
 	return result.Error
 }

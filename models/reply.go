@@ -5,5 +5,5 @@ type Reply struct {
 	Text           string `json:"text" binding:"required"`
 	Reported       bool   `gorm:"default:false" json:"reported"`
 	DeletePassword string `json:"delete_password" gorm:"not null" binding:"required"`
-	ThreadID       uint   `json:"-"`
+	ThreadID       uint   `json:"thread_id"`
 }
