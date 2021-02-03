@@ -1,9 +1,10 @@
-package providers
+package database
 
 import (
 	"fmt"
 	"net/url"
 
+	"github.com/kelvin-mai/go-anon-board/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -17,7 +18,7 @@ type databaseConnection struct {
 	DB *gorm.DB
 }
 
-func NewDatabaseConnection(c *Config) DatabaseConnection {
+func NewDatabaseConnection(c *config.Config) DatabaseConnection {
 	config := c.Get()
 	user := config.GetString("db.username")
 	password := config.GetString("db.password")
@@ -43,6 +44,9 @@ func NewDatabaseConnection(c *Config) DatabaseConnection {
 	})
 	if err != nil {
 		panic("database connection failed")
+	}
+	if config.GetBool("db.sync") {
+		synchronize(db)
 	}
 
 	return &databaseConnection{DB: db}

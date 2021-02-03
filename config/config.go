@@ -1,4 +1,4 @@
-package providers
+package config
 
 import (
 	log "github.com/sirupsen/logrus"

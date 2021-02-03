@@ -1,8 +1,8 @@
 package services
 
 import (
+	"github.com/kelvin-mai/go-anon-board/database"
 	"github.com/kelvin-mai/go-anon-board/models"
-	"github.com/kelvin-mai/go-anon-board/providers"
 	"gorm.io/gorm"
 )
 
@@ -18,7 +18,7 @@ type replyService struct {
 	db *gorm.DB
 }
 
-func NewReplyService(conn providers.DatabaseConnection) ReplyService {
+func NewReplyService(conn database.DatabaseConnection) ReplyService {
 	return &replyService{db: conn.GetDB()}
 }
 

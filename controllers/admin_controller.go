@@ -8,6 +8,7 @@ import (
 
 type AdminController interface {
 	DeleteThread(c *gin.Context)
+	DeleteReply(c *gin.Context)
 }
 
 type adminController struct {

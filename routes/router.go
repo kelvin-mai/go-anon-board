@@ -1,52 +1,44 @@
-package providers
+package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/kelvin-mai/go-anon-board/response"
+	"github.com/kelvin-mai/go-anon-board/config"
+	"github.com/kelvin-mai/go-anon-board/controllers"
 	cors "github.com/rs/cors/wrapper/gin"
 )
 
 type Router interface {
 	gin.IRouter
 	Serve() error
+	RegisterThreadRoutes(c controllers.ThreadController)
+	RegisterAdminRoutes(c controllers.AdminController)
 }
 
 type router struct {
 	*gin.Engine
-	port string
+	c *config.Config
 }
 
-func NewRouter(c *Config) Router {
+func NewRouter(c *config.Config) Router {
 	config := c.Get()
 	r := gin.New()
-	r.Use(gin.Recovery())
-
 	if config.GetString("ENVIRONMENT") == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	if config.GetBool("app.log") {
 		r.Use(gin.Logger())
 	}
-
-	r.Use(gin.Recovery())
 	r.Use(cors.New(cors.Options{
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
 		AllowedOrigins: []string{"http://localhost:3000"},
 		AllowedHeaders: []string{"*"},
 	}))
 
-	r.GET("/", func(c *gin.Context) {
-		response.OK(c, gin.H{"health": "OK"})
-	})
-
-	r.NoRoute(func(c *gin.Context) {
-		response.ResourceNotFound(c, nil)
-	})
-
-	port := config.GetString("app.port")
-	return &router{Engine: r, port: port}
+	setupDefaults(r)
+	return &router{Engine: r, c: c}
 }
 
 func (r *router) Serve() error {
-	return r.Run(":" + r.port)
+	port := r.c.Get().GetString("app.port")
+	return r.Run(":" + port)
 }
