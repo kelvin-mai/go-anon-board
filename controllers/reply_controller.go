@@ -24,8 +24,8 @@ func NewReplyController(rs services.ReplyService) ReplyController {
 
 func (rc *replyController) GetReply(c *gin.Context) {
 	id := c.Param("id")
-	notfound, reply := rc.rs.GetByID(id)
-	if notfound == true {
+	err, reply := rc.rs.GetByID(id)
+	if err != nil {
 		response.ResourceNotFound(c, nil)
 		return
 	}
@@ -50,12 +50,12 @@ func (rc *replyController) CreateReply(c *gin.Context) {
 
 func (rc *replyController) ReportReply(c *gin.Context) {
 	id := c.Param("id")
-	notfound, _ := rc.rs.GetByID(id)
-	if notfound == true {
+	err, _ := rc.rs.GetByID(id)
+	if err != nil {
 		response.ResourceNotFound(c, nil)
 		return
 	}
-	err := rc.rs.Update(id, models.Reply{
+	err = rc.rs.Update(id, models.Reply{
 		Reported: true,
 	})
 	if err != nil {
@@ -68,12 +68,12 @@ func (rc *replyController) ReportReply(c *gin.Context) {
 
 func (rc *replyController) DeleteReply(c *gin.Context) {
 	id := c.Param("id")
-	notfound, _ := rc.rs.GetByID(id)
-	if notfound == true {
+	err, _ := rc.rs.GetByID(id)
+	if err != nil {
 		response.ResourceNotFound(c, nil)
 		return
 	}
-	err := rc.rs.Update(id, models.Reply{
+	err = rc.rs.Update(id, models.Reply{
 		Text: "[deleted]",
 	})
 	if err != nil {

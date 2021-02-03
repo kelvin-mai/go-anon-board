@@ -49,8 +49,8 @@ func (tc *threadController) ListThreads(c *gin.Context) {
 
 func (tc *threadController) GetThread(c *gin.Context) {
 	id := c.Param("id")
-	notfound, thread := tc.ts.GetByID(id)
-	if notfound == true {
+	err, thread := tc.ts.GetByID(id)
+	if err != nil {
 		response.ResourceNotFound(c, nil)
 		return
 	}
@@ -75,12 +75,12 @@ func (tc *threadController) CreateThread(c *gin.Context) {
 
 func (tc *threadController) ReportThread(c *gin.Context) {
 	id := c.Param("id")
-	notfound, _ := tc.ts.GetByID(id)
-	if notfound == true {
+	err, _ := tc.ts.GetByID(id)
+	if err != nil {
 		response.ResourceNotFound(c, nil)
 		return
 	}
-	err := tc.ts.Update(id, models.Thread{
+	err = tc.ts.Update(id, models.Thread{
 		Reported: true,
 	})
 	if err != nil {
@@ -93,12 +93,12 @@ func (tc *threadController) ReportThread(c *gin.Context) {
 
 func (tc *threadController) DeleteThread(c *gin.Context) {
 	id := c.Param("id")
-	notfound, _ := tc.ts.GetByID(id)
-	if notfound == true {
+	err, _ := tc.ts.GetByID(id)
+	if err != nil {
 		response.ResourceNotFound(c, nil)
 		return
 	}
-	err := tc.ts.Update(id, models.Thread{
+	err = tc.ts.Update(id, models.Thread{
 		Text: "[deleted]",
 	})
 	if err != nil {

@@ -21,12 +21,12 @@ func NewAdminController(ts services.ThreadService, rs services.ReplyService) Adm
 
 func (a *adminController) DeleteThread(c *gin.Context) {
 	id := c.Param("id")
-	notfound, _ := a.ts.GetByID(id)
-	if notfound == true {
+	err, _ := a.ts.GetByID(id)
+	if err != nil {
 		response.ResourceNotFound(c, nil)
 		return
 	}
-	err := a.ts.Delete(id)
+	err = a.ts.Delete(id)
 	if err != nil {
 		response.InternalServerError(c, err)
 		return
@@ -37,12 +37,12 @@ func (a *adminController) DeleteThread(c *gin.Context) {
 
 func (a *adminController) DeleteReply(c *gin.Context) {
 	id := c.Param("id")
-	notfound, _ := a.rs.GetByID(id)
-	if notfound == true {
+	err, _ := a.rs.GetByID(id)
+	if err != nil {
 		response.ResourceNotFound(c, nil)
 		return
 	}
-	err := a.rs.Delete("id")
+	err = a.rs.Delete("id")
 	if err != nil {
 		response.InternalServerError(c, err)
 		return

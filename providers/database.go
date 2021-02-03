@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type DatabaseConnection interface {
@@ -24,6 +25,11 @@ func NewDatabaseConnection(c *Config) DatabaseConnection {
 	host := config.GetString("db.host")
 	port := config.GetInt("db.port")
 
+	var enableLogging logger.Interface
+	if config.GetBool("db.log") {
+		enableLogging = logger.Default
+	}
+
 	dsn := url.URL{
 		User:     url.UserPassword(user, password),
 		Scheme:   "postgres",
@@ -32,14 +38,11 @@ func NewDatabaseConnection(c *Config) DatabaseConnection {
 		RawQuery: (&url.Values{"sslmode": []string{"disable"}}).Encode(),
 	}
 
-	conn, err := gorm.Open("postgres", dsn.String())
+	db, err := gorm.Open(postgres.Open(dsn.String()), &gorm.Config{
+		Logger: enableLogging,
+	})
 	if err != nil {
 		panic("database connection failed")
-	}
-	db := conn
-
-	if config.GetBool("db.log") {
-		db.LogMode(true)
 	}
 
 	return &databaseConnection{DB: db}

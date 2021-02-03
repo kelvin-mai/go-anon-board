@@ -1,14 +1,14 @@
 package services
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/kelvin-mai/go-anon-board/models"
 	"github.com/kelvin-mai/go-anon-board/providers"
+	"gorm.io/gorm"
 )
 
 type ReplyService interface {
 	List(offset int) (error, *[]models.Reply)
-	GetByID(id string) (bool, *models.Reply)
+	GetByID(id string) (error, *models.Reply)
 	Create(t models.Reply) (error, *models.Reply)
 	Update(id string, t models.Reply) error
 	Delete(id string) error
@@ -28,10 +28,10 @@ func (rs *replyService) List(offset int) (error, *[]models.Reply) {
 	return result.Error, &r
 }
 
-func (rs *replyService) GetByID(id string) (bool, *models.Reply) {
+func (rs *replyService) GetByID(id string) (error, *models.Reply) {
 	var r models.Reply
 	result := rs.db.Where("id = ?", id).First(&r)
-	return result.RecordNotFound(), &r
+	return result.Error, &r
 }
 
 func (rs *replyService) Create(r models.Reply) (error, *models.Reply) {
@@ -40,7 +40,7 @@ func (rs *replyService) Create(r models.Reply) (error, *models.Reply) {
 }
 
 func (rs *replyService) Update(id string, r models.Reply) error {
-	result := rs.db.Model(&r).Where("id = ?", id).Update(&r)
+	result := rs.db.Model(&r).Where("id = ?", id).Updates(&r)
 	return result.Error
 }
 
