@@ -3,6 +3,7 @@ package providers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kelvin-mai/go-anon-board/response"
+	cors "github.com/rs/cors/wrapper/gin"
 )
 
 type Router interface {
@@ -28,6 +29,11 @@ func NewRouter(c *Config) Router {
 	}
 
 	r.Use(gin.Recovery())
+	r.Use(cors.New(cors.Options{
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedOrigins: []string{"http://localhost:3000"},
+		AllowedHeaders: []string{"*"},
+	}))
 
 	r.GET("/", func(c *gin.Context) {
 		response.OK(c, gin.H{"health": "OK"})

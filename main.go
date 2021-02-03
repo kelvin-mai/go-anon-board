@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kelvin-mai/go-anon-board/controllers"
 	"github.com/kelvin-mai/go-anon-board/middlewares"
-	"github.com/kelvin-mai/go-anon-board/models"
 	"github.com/kelvin-mai/go-anon-board/providers"
 	"github.com/kelvin-mai/go-anon-board/services"
 )
@@ -35,8 +34,6 @@ func initializeProviders() (*providers.Config, providers.DatabaseConnection, pro
 	c := providers.NewConfig()
 	conn := providers.NewDatabaseConnection(c)
 	r := providers.NewRouter(c)
-
-	conn.Sync(c, &models.Thread{}, &models.Reply{})
 
 	return c, conn, r
 }

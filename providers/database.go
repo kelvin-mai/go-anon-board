@@ -6,11 +6,9 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	log "github.com/sirupsen/logrus"
 )
 
 type DatabaseConnection interface {
-	Sync(c *Config, models ...interface{})
 	GetDB() *gorm.DB
 }
 
@@ -45,15 +43,6 @@ func NewDatabaseConnection(c *Config) DatabaseConnection {
 	}
 
 	return &databaseConnection{DB: db}
-}
-
-func (d *databaseConnection) Sync(c *Config, models ...interface{}) {
-	if c.Get().GetBool("db.sync") {
-		log.Info("Synchronizing database")
-		for _, m := range models {
-			d.DB.AutoMigrate(m)
-		}
-	}
 }
 
 func (d *databaseConnection) GetDB() *gorm.DB {
