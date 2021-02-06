@@ -1,12 +1,13 @@
 package test
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
 
 	"github.com/gin-gonic/gin"
-	"github.com/kelvin-mai/go-anon-board/response"
+	"github.com/kelvin-mai/go-anon-board/utils"
 )
 
 func MockRouter() *gin.Engine {
@@ -16,11 +17,11 @@ func MockRouter() *gin.Engine {
 	r := gin.Default()
 
 	r.GET("/", func(c *gin.Context) {
-		response.OK(c, gin.H{"health": "OK"})
+		c.JSON(http.StatusOK, gin.H{"health": "OK"})
 		return
 	})
 	r.NoRoute(func(c *gin.Context) {
-		response.ResourceNotFound(c, nil)
+		utils.CreateApiError(http.StatusNotFound, errors.New("route not found"))
 		return
 	})
 

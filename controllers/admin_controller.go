@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
-	"github.com/kelvin-mai/go-anon-board/response"
 	"github.com/kelvin-mai/go-anon-board/services"
+	"github.com/kelvin-mai/go-anon-board/utils"
 )
 
 type AdminController interface {
@@ -22,32 +24,22 @@ func NewAdminController(ts services.ThreadService, rs services.ReplyService) Adm
 
 func (a *adminController) DeleteThread(c *gin.Context) {
 	id := c.Param("id")
-	err, _ := a.ts.GetByID(id)
+	err := a.ts.Delete(id)
 	if err != nil {
-		response.ResourceNotFound(c, nil)
+		c.JSON(utils.ErrorFromDatabase(err))
 		return
 	}
-	err = a.ts.Delete(id)
-	if err != nil {
-		response.InternalServerError(c, err)
-		return
-	}
-	response.NoContent(c)
+	c.JSON(http.StatusNoContent, nil)
 	return
 }
 
 func (a *adminController) DeleteReply(c *gin.Context) {
 	id := c.Param("id")
-	err, _ := a.rs.GetByID(id)
+	err := a.rs.Delete(id)
 	if err != nil {
-		response.ResourceNotFound(c, nil)
+		c.JSON(utils.ErrorFromDatabase(err))
 		return
 	}
-	err = a.rs.Delete("id")
-	if err != nil {
-		response.InternalServerError(c, err)
-		return
-	}
-	response.NoContent(c)
+	c.JSON(http.StatusNoContent, nil)
 	return
 }

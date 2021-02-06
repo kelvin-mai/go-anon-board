@@ -1,12 +1,14 @@
 package controllers
 
 import (
+	"errors"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kelvin-mai/go-anon-board/models"
-	"github.com/kelvin-mai/go-anon-board/response"
 	"github.com/kelvin-mai/go-anon-board/services"
+	"github.com/kelvin-mai/go-anon-board/utils"
 )
 
 type ThreadController interface {
@@ -26,24 +28,22 @@ func NewThreadController(ts services.ThreadService) ThreadController {
 }
 
 func (tc *threadController) ListThreads(c *gin.Context) {
-	offset := 0
+	page := 0
 	pageQuery := c.Query("page")
 	if pageQuery != "" {
-		page, err := strconv.Atoi(pageQuery)
+		p, err := strconv.Atoi(pageQuery)
 		if err != nil {
-			response.BadRequest(c, err)
+			c.JSON(utils.CreateApiError(http.StatusBadRequest, errors.New("invalid page query parameter")))
 			return
 		}
-		if page > 0 {
-			offset = page - 1
-		}
+		page = p
 	}
-	err, threads := tc.ts.List(offset)
+	err, threads := tc.ts.List(page)
 	if err != nil {
-		response.InternalServerError(c, err)
+		c.JSON(utils.ErrorFromDatabase(err))
 		return
 	}
-	response.OK(c, threads)
+	c.JSON(http.StatusOK, threads)
 	return
 }
 
@@ -51,60 +51,46 @@ func (tc *threadController) GetThread(c *gin.Context) {
 	id := c.Param("id")
 	err, thread := tc.ts.GetByID(id)
 	if err != nil {
-		response.ResourceNotFound(c, nil)
+		c.JSON(utils.ErrorFromDatabase(err))
 		return
 	}
-	response.OK(c, thread)
+	c.JSON(http.StatusOK, thread)
 	return
 }
 
 func (tc *threadController) CreateThread(c *gin.Context) {
 	var t models.Thread
 	if err := c.ShouldBindJSON(&t); err != nil {
-		response.BadRequest(c, err)
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 	err, thread := tc.ts.Create(t)
 	if err != nil {
-		response.InternalServerError(c, err)
+		c.JSON(utils.ErrorFromDatabase(err))
 		return
 	}
-	response.Created(c, thread)
+	c.JSON(http.StatusCreated, thread)
 	return
 }
 
 func (tc *threadController) ReportThread(c *gin.Context) {
 	id := c.Param("id")
-	err, _ := tc.ts.GetByID(id)
+	err := tc.ts.Report(id)
 	if err != nil {
-		response.ResourceNotFound(c, nil)
+		c.JSON(utils.ErrorFromDatabase(err))
 		return
 	}
-	err = tc.ts.Update(id, models.Thread{
-		Reported: true,
-	})
-	if err != nil {
-		response.InternalServerError(c, err)
-		return
-	}
-	response.NoContent(c)
+	c.JSON(http.StatusNoContent, nil)
 	return
 }
 
 func (tc *threadController) DeleteThread(c *gin.Context) {
 	id := c.Param("id")
-	err, _ := tc.ts.GetByID(id)
+	err := tc.ts.Delete(id)
 	if err != nil {
-		response.ResourceNotFound(c, nil)
+		c.JSON(utils.ErrorFromDatabase(err))
 		return
 	}
-	err = tc.ts.Update(id, models.Thread{
-		Text: "[deleted]",
-	})
-	if err != nil {
-		response.InternalServerError(c, err)
-		return
-	}
-	response.NoContent(c)
+	c.JSON(http.StatusNoContent, nil)
 	return
 }

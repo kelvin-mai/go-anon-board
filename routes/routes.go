@@ -1,19 +1,21 @@
 package routes
 
 import (
+	"errors"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/kelvin-mai/go-anon-board/controllers"
-	"github.com/kelvin-mai/go-anon-board/middlewares"
-	"github.com/kelvin-mai/go-anon-board/response"
+	"github.com/kelvin-mai/go-anon-board/utils"
 )
 
 func setupDefaults(r *gin.Engine) {
 	r.Use(gin.Recovery())
 	r.GET("/", func(c *gin.Context) {
-		response.OK(c, gin.H{"health": "OK"})
+		c.JSON(http.StatusOK, gin.H{"health": "OK"})
 	})
 	r.NoRoute(func(c *gin.Context) {
-		response.ResourceNotFound(c, nil)
+		utils.CreateApiError(http.StatusNotFound, errors.New("no route found"))
 	})
 }
 
@@ -29,7 +31,7 @@ func (r *router) RegisterThreadRoutes(c controllers.ThreadController) {
 func (r *router) RegisterAdminRoutes(c controllers.AdminController) {
 	apiKey := r.c.Get().GetString("admin.api_key")
 	rg := r.Group("/api/admin")
-	rg.Use(middlewares.ApiKey("API-KEY", apiKey))
+	rg.Use(ApiKey("API-KEY", apiKey))
 
 	rg.DELETE("/thread/:id", c.DeleteThread)
 	rg.DELETE("/replies/:id", c.DeleteReply)
