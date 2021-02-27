@@ -1,6 +1,7 @@
 app:
   port: 6969
   log: true
+  api_key: "mysecretapikey"
 
 db:
   username: "postgres"

@@ -29,9 +29,9 @@ func (r *router) RegisterThreadRoutes(c controllers.ThreadController) {
 }
 
 func (r *router) RegisterAdminRoutes(c controllers.AdminController) {
-	apiKey := r.c.Get().GetString("admin.api_key")
+	apiKey := r.c.Get().GetString("app.api_key")
 	rg := r.Group("/api/admin")
-	rg.Use(ApiKey("API-KEY", apiKey))
+	rg.Use(ApiKey("X-API-KEY", apiKey))
 
 	rg.DELETE("/thread/:id", c.DeleteThread)
 	rg.DELETE("/replies/:id", c.DeleteReply)

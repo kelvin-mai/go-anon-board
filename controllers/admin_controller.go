@@ -29,7 +29,9 @@ func (a *adminController) DeleteThread(c *gin.Context) {
 		c.JSON(utils.ErrorFromDatabase(err))
 		return
 	}
-	c.JSON(http.StatusNoContent, nil)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+	})
 	return
 }
 
@@ -40,6 +42,8 @@ func (a *adminController) DeleteReply(c *gin.Context) {
 		c.JSON(utils.ErrorFromDatabase(err))
 		return
 	}
-	c.JSON(http.StatusNoContent, nil)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+	})
 	return
 }

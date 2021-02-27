@@ -5,6 +5,7 @@ import (
 
 	"github.com/kelvin-mai/go-anon-board/database"
 	"github.com/kelvin-mai/go-anon-board/models"
+	"github.com/kelvin-mai/go-anon-board/utils"
 	"gorm.io/gorm"
 )
 
@@ -42,6 +43,11 @@ func (ts *threadService) GetByID(id string) (error, *models.Thread) {
 }
 
 func (ts *threadService) Create(t models.Thread) (error, *models.Thread) {
+	password, err := utils.HashPassword(t.DeletePassword)
+	if err != nil {
+		return err, nil
+	}
+	t.DeletePassword = password
 	result := ts.db.Create(&t)
 	return result.Error, &t
 }
@@ -65,7 +71,7 @@ func (ts *threadService) DeleteWithPassword(id string, password string) error {
 		if result := tx.Where("id = ?", id).First(&t); result.Error != nil {
 			return result.Error
 		}
-		if t.DeletePassword != password {
+		if !utils.CheckPassword(password, t.DeletePassword) {
 			return errors.New("incorrect password")
 		}
 		if result := tx.Model(&t).Where("id = ?", id).Update("text", "[deleted]"); result.Error != nil {

@@ -8,9 +8,8 @@ import (
 )
 
 type ApiError struct {
-	Status      int    `json:"status"`
-	Message     string `json:"message"`
-	Description string `json:"description"`
+	Status  int    `json:"status"`
+	Message string `json:"message"`
 }
 
 func CreateApiError(status int, err error) (int, *ApiError) {

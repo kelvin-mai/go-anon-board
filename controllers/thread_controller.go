@@ -61,7 +61,7 @@ func (tc *threadController) GetThread(c *gin.Context) {
 func (tc *threadController) CreateThread(c *gin.Context) {
 	var t models.Thread
 	if err := c.ShouldBindJSON(&t); err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(utils.CreateApiError(http.StatusBadRequest, errors.New("invalid request body")))
 		return
 	}
 	err, thread := tc.ts.Create(t)
@@ -80,17 +80,26 @@ func (tc *threadController) ReportThread(c *gin.Context) {
 		c.JSON(utils.ErrorFromDatabase(err))
 		return
 	}
-	c.JSON(http.StatusNoContent, nil)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+	})
 	return
 }
 
 func (tc *threadController) DeleteThread(c *gin.Context) {
 	id := c.Param("id")
-	err := tc.ts.Delete(id)
+	password := c.Query("password")
+	if password == "" {
+		c.JSON(utils.CreateApiError(http.StatusBadRequest, errors.New("must provide password query")))
+		return
+	}
+	err := tc.ts.DeleteWithPassword(id, password)
 	if err != nil {
 		c.JSON(utils.ErrorFromDatabase(err))
 		return
 	}
-	c.JSON(http.StatusNoContent, nil)
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+	})
 	return
 }
