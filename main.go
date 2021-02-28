@@ -17,11 +17,11 @@ func main() {
 	rs := services.NewReplyService(conn)
 
 	tc := controllers.NewThreadController(ts)
-	// rc := controllers.NewReplyController(rs)
+	rc := controllers.NewReplyController(rs)
 	ac := controllers.NewAdminController(ts, rs)
 
-	// replyRoutes := api.Group("/threads/:thread_id/replies")
 	r.RegisterThreadRoutes(tc)
+	r.RegisterReplyRoutes(rc)
 	r.RegisterAdminRoutes(ac)
 
 	r.Serve()

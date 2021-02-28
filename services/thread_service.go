@@ -32,13 +32,25 @@ func (ts *threadService) List(page int) (error, *[]models.Thread) {
 	if page > 0 {
 		offset = page - 1
 	}
-	result := ts.db.Preload("Replies").Limit(10).Offset(offset).Find(&t)
+	result := ts.db.
+		Preload("Replies", func(db *gorm.DB) *gorm.DB {
+			return db.Limit(10)
+		}).
+		Order("bumped_on DESC").
+		Limit(10).
+		Offset(offset).
+		Find(&t)
 	return result.Error, &t
 }
 
 func (ts *threadService) GetByID(id string) (error, *models.Thread) {
 	var t models.Thread
-	result := ts.db.Where("id = ?", id).Preload("Replies").First(&t)
+	result := ts.db.
+		Where("id = ?", id).
+		Preload("Replies", func(db *gorm.DB) *gorm.DB {
+			return db.Limit(10)
+		}).
+		First(&t)
 	return result.Error, &t
 }
 

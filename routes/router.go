@@ -11,6 +11,7 @@ type Router interface {
 	gin.IRouter
 	Serve() error
 	RegisterThreadRoutes(c controllers.ThreadController)
+	RegisterReplyRoutes(c controllers.ReplyController)
 	RegisterAdminRoutes(c controllers.AdminController)
 }
 
