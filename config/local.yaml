@@ -1,0 +1,3 @@
+app:
+  port: 6969
+  log: true
