@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/kelvin-mai/go-anon-board/config"
+	"github.com/kelvin-mai/go-anon-board/controllers"
 	"github.com/kelvin-mai/go-anon-board/database"
 	"github.com/kelvin-mai/go-anon-board/routes"
+	"github.com/kelvin-mai/go-anon-board/services"
 )
 
 func main() {
@@ -14,7 +14,11 @@ func main() {
 	r := routes.NewRouter(c)
 	conn := database.NewDatabaseConnection(c)
 
-	fmt.Println(conn)
+	ts := services.NewThreadService(conn)
+
+	tc := controllers.NewThreadController(ts)
+
+	r.RegisterThreadRoutes(tc)
 
 	r.Serve()
 }
