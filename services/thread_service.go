@@ -15,6 +15,7 @@ type ThreadService interface {
 	Create(t models.Thread) (error, *models.Thread)
 	Report(id string) error
 	DeleteWithPassword(id, password string) error
+	Delete(id string) error
 }
 
 type threadService struct {
@@ -32,6 +33,9 @@ func (ts *threadService) List(page int) (error, *[]models.Thread) {
 		offset = page - 1
 	}
 	result := ts.db.
+		Preload("Replies", func(db *gorm.DB) *gorm.DB {
+			return db.Limit(10)
+		}).
 		Order("bumped_on DESC").
 		Limit(10).
 		Offset(offset).
@@ -43,6 +47,9 @@ func (ts *threadService) GetByID(id string) (error, *models.Thread) {
 	var t models.Thread
 	result := ts.db.
 		Where("id = ?", id).
+		Preload("Replies", func(db *gorm.DB) *gorm.DB {
+			return db.Limit(10)
+		}).
 		First(&t)
 	return result.Error, &t
 }
@@ -78,6 +85,19 @@ func (ts *threadService) DeleteWithPassword(id, password string) error {
 		}
 		if !utils.CheckPassword(password, t.DeletePassword) {
 			return errors.New("incorrect password")
+		}
+		if result := tx.Model(&t).Where("id = ?", id).Update("text", "[deleted]"); result.Error != nil {
+			return result.Error
+		}
+		return nil
+	})
+}
+
+func (ts *threadService) Delete(id string) error {
+	return ts.db.Transaction(func(tx *gorm.DB) error {
+		var t models.Thread
+		if result := tx.Where("id = ?", id).First(&t); result.Error != nil {
+			return result.Error
 		}
 		if result := tx.Model(&t).Where("id = ?", id).Update("text", "[deleted]"); result.Error != nil {
 			return result.Error
