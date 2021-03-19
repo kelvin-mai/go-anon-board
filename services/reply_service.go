@@ -34,7 +34,7 @@ func (rs *replyService) ListByThreadID(tid string, page int) (error, *[]models.R
 	if page > 0 {
 		offset = page - 1
 	}
-	result := rs.db.Limit(10).Offset(offset).Find(&r)
+	result := rs.db.Where("thread_id = ?", tid).Limit(10).Offset(offset).Find(&r)
 	return result.Error, &r
 }
 
